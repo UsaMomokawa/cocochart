@@ -4,7 +4,7 @@ import { Bar } from 'react-chartjs-2';
 
 interface Inputs {
   text: string,
-};
+}
 
 const labels = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91-100']
 
@@ -30,20 +30,20 @@ const options = {
 }
 
 const groupBy = (numbers: number[]) => {
-  const m = new Map();
+  const m = new Map<number, number[]>();
   for (const number of numbers) {
     const i = Math.trunc((number - 1) / 10)
-    m.has(i) ? m.get(i).push(number) : m.set(i, [number])
+    m.has(i) ? m.get(i)?.push(number) : m.set(i, [number])
   }
 
-  const data = new Array(9);
+  const data = new Array<number>(9);
   m.forEach((value, key) => {
     data[key] = value.length
   })
   return data;
 }
 
-export default function Form() {
+const Chart: React.FC = () => {
   const [datasets, setDatasets] = useState([{
     label: '探索者名',
     data: [0],
@@ -61,7 +61,7 @@ export default function Form() {
     const names: string[] = [];
     for (const line of lines) {
       let dice = 0;
-      const matched = line.getElementsByTagName('span')[2].innerText.match(/＞ (\d+) ＞/);
+      const matched = /＞ (\d+) ＞/.exec(line.getElementsByTagName('span')[2].innerText);
       if (matched) {
         dice = Number(matched[1]);
       } else {
@@ -77,7 +77,7 @@ export default function Form() {
         datasets.push({label: name, data: [dice], backgroundColor: color});
         names.push(name);
       }
-    };
+    }
 
     datasets.forEach(dataset => dataset.data = groupBy(dataset.data));
     return setDatasets(datasets);
@@ -95,3 +95,5 @@ export default function Form() {
     </>
   );
 }
+
+export default Chart;
